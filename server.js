@@ -52,6 +52,7 @@ io.on("connection", socket => {
   });
 });
 
+// Iniciando o servidor na porta configurada
 http.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
