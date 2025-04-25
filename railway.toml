@@ -1,0 +1,8 @@
+# railway.toml
+[build]
+  # O comando de build para o seu projeto (geralmente não é necessário para um app Node.js simples)
+  command = "npm install"
+
+[deploy]
+  # O comando de inicialização que o Railway usará para rodar o seu app
+  command = "npm start"
