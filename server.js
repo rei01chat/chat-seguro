@@ -1,59 +1,57 @@
 const express = require("express");
+const http = require("http");
+const socketIo = require("socket.io");
+const path = require("path");
+const fs = require("fs");
+const { createRoom, generateRoomKey } = require("./config/roomManager");
+const { handleMessage, handleAudio, handleMessageSeen, createRoomHandler } = require("./config/socketHandler");
+
 const app = express();
-const http = require("http").createServer(app);
-const io = require("socket.io")(http);
-const crypto = require("crypto");
-const cors = require("cors");
+const server = http.createServer(app);
+const io = socketIo(server);
 
-// Usando CORS para permitir conexões de diferentes origens
-app.use(cors());
+const PORT = process.env.PORT || 3000;
 
-// Servindo arquivos estáticos da pasta 'public'
+// Middleware para servir arquivos estáticos
 app.use(express.static("public"));
+app.use("/uploads", express.static("uploads"));
 
-// Porta dinâmica para produção (Railway, Heroku, etc.)
-const PORT = process.env.PORT || 3000; // Se não for fornecida, usará a porta 3000
+// Certifica-se de que a pasta de uploads existe
+if (!fs.existsSync("./uploads")) {
+  fs.mkdirSync("./uploads");
+}
 
-const rooms = {};
-const seenStatus = {};
+// Conexões de WebSocket
+io.on("connection", (socket) => {
+  console.log(`Novo cliente conectado: ${socket.id}`);
 
-io.on("connection", socket => {
-  console.log("Novo cliente conectado", socket.id);
-
-  // Entrando em uma sala
-  socket.on("join_room", room => {
-    console.log(`Cliente ${socket.id} entrou na sala ${room}`);
-    socket.join(room);
-
-    if (!rooms[room]) {
-      rooms[room] = crypto.randomBytes(32).toString("hex");
-    }
-
-    socket.emit("key", rooms[room]);
+  // Entrar em sala e fornecer chave de criptografia
+  socket.on("join_room", (room) => {
+    createRoom(socket, room, rooms);
   });
 
-  // Enviando mensagem
+  // Enviar mensagem criptografada
   socket.on("send_message", ({ room, message, id }) => {
-    console.log(`Mensagem recebida na sala ${room}: ${message}`);
-    seenStatus[id] = []; // Inicia lista de quem viu
-    socket.to(room).emit("receive_message", message);
+    handleMessage(socket, room, message, id, rooms, seenStatus, io);
   });
 
-  // Atualizando quem viu a mensagem
-  socket.on("message_seen", ({ room, id, user }) => {
-    if (!seenStatus[id]) {
-      seenStatus[id] = [];
-    }
+  // Envio de áudio
+  socket.on("send_audio", ({ room, audioUrl, username }) => {
+    handleAudio(room, audioUrl, username, io);
+  });
 
-    if (!seenStatus[id].includes(user)) {
-      seenStatus[id].push(user);
-      io.to(room).emit("update_seen", { id, user });
-    }
+  // Atualizar status de mensagem visualizada
+  socket.on("message_seen", ({ room, id, user }) => {
+    handleMessageSeen(id, user, room, seenStatus, io);
+  });
+
+  // Criar sala manualmente
+  socket.on("create_room", (roomName) => {
+    createRoomHandler(socket, roomName, rooms);
   });
 });
 
-// Iniciando o servidor na porta configurada
-http.listen(PORT, () => {
+// Iniciar o servidor
+server.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
-

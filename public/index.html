@@ -9,96 +9,134 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Roboto', sans-serif;
-      background-color: #111;
+      background-color: #222;
       color: #fff;
       display: flex;
       flex-direction: column;
       height: 100vh;
     }
     .header {
-      background-color: #222;
+      background-color: #333;
       padding: 15px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      color: #fff;
+      border-bottom: 2px solid #555;
     }
-    .header button {
-      background: #28a745;
-      border: none;
-      color: white;
-      padding: 10px 15px;
-      border-radius: 10px;
-      font-size: 14px;
+    .header .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #status-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: green;
     }
     #chat {
       flex: 1;
       overflow-y: auto;
-      padding: 10px;
+      padding: 16px;
+      background-color: #222;
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
     .message {
-      max-width: 70%;
-      padding: 10px;
-      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 8px;
+      max-width: 75%;
+      font-size: 14px;
+      line-height: 1.4;
       word-wrap: break-word;
       position: relative;
     }
-    .you {
+    .message.you {
       align-self: flex-end;
       background-color: #007bff;
+      color: #fff;
     }
-    .other {
+    .message.other {
       align-self: flex-start;
-      background-color: #444;
+      background-color: #555;
+      color: #fff;
+    }
+    .message-time {
+      font-size: 12px;
+      color: #ccc;
+      margin-left: 8px;
+      white-space: nowrap;
+    }
+    .message-status {
+      font-size: 12px;
+      color: #ccc;
+      margin-left: 4px;
+      white-space: nowrap;
     }
     .footer {
       display: flex;
-      padding: 10px;
-      background-color: #222;
-      gap: 10px;
-    }
-    .footer input {
-      flex: 1;
-      padding: 10px;
-      border-radius: 10px;
-      border: none;
+      align-items: center;
+      padding: 12px;
       background-color: #333;
+      gap: 10px;
+      border-top: 2px solid #555;
+    }
+    .footer input[type="text"] {
+      flex: 1;
+      padding: 10px 15px;
+      border-radius: 20px;
+      border: none;
+      background-color: #555;
       color: white;
+      font-size: 14px;
     }
     .footer button {
       padding: 10px 15px;
       background: #28a745;
       border: none;
       color: white;
-      border-radius: 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
     }
-    .footer input[type="file"] {
-      display: none;
+    .footer label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background-color: #007bff;
+      border-radius: 50%;
+      cursor: pointer;
     }
+    .footer input[type="file"] { display: none; }
     #modal {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0, 0, 0, 0.8);
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
-      display: none;
     }
     #modalContent {
-      background: #222;
+      background: #333;
       padding: 20px;
       border-radius: 10px;
       display: flex;
       flex-direction: column;
       gap: 10px;
+      min-width: 280px;
     }
     #modalContent input {
       padding: 10px;
       border-radius: 6px;
       border: none;
-      background: #333;
+      background: #444;
       color: white;
     }
     #modalContent button {
@@ -107,37 +145,83 @@
       background: #28a745;
       color: white;
       border-radius: 6px;
+      cursor: pointer;
     }
-    .message-time {
-      font-size: 12px;
-      color: #aaa;
+
+    /* Tela de Boas-vindas */
+    #welcome-screen {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #222;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-align: center;
+      font-size: 18px;
+      z-index: 9999;
+      opacity: 1;
+      animation: fadeIn 1s ease-out;
     }
-    .message img {
-      max-width: 100%;
-      border-radius: 10px;
+
+    #welcome-screen h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
     }
-    .seen-by {
-      font-size: 10px;
-      color: #aaa;
-      margin-top: 3px;
+
+    #welcome-screen p {
+      font-size: 20px;
+      margin-bottom: 30px;
+    }
+
+    #welcome-screen button {
+      background-color: #28a745;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
   </style>
 </head>
 <body>
+  <div id="welcome-screen">
+    <h1>Bem-vindo ao Chat Seguro</h1>
+    <p>O chat mais seguro para conversas do mundo inteiro. Mensagens criptografadas, impossíveis de serem hackeadas ou grampeadas por qualquer pessoa, até mesmo autoridades. Sua privacidade é nossa prioridade!</p>
+    <button onclick="showLoginModal()">OK</button>
+  </div>
+
   <div class="header">
     <div>Chat Seguro</div>
-    <button onclick="showModal()">Entrar na sala</button>
+    <div class="header-right">
+      <span id="user-status">Online</span>
+      <div id="status-indicator"></div>
+    </div>
   </div>
   <div id="chat"></div>
   <div class="footer">
-    <input id="messageInput" placeholder="Digite sua mensagem...">
+    <input id="messageInput" type="text" placeholder="Digite sua mensagem...">
     <button onclick="sendMessage()">Enviar</button>
-    <label for="imageUpload" style="background-color: #007bff; padding: 10px; border-radius: 10px; cursor: pointer;">📷</label>
+    <label for="imageUpload">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fff" viewBox="0 0 24 24">
+        <path d="M21 19V5a2 2 0 0 0-2-2H5c-1.105 0-2 .895-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+      </svg>
+    </label>
     <input type="file" id="imageUpload" accept="image/*" onchange="handleImageUpload(event)">
+    <button id="recordBtn" style="background:#ff4081;">🎤</button>
+    <button onclick="showModal()" style="background:#ffb74d;">+</button>
   </div>
-
   <div id="modal">
     <div id="modalContent">
+      <p><strong><p style="text-align: center;"><strong>Insira seu nome e o número da sala</strong></p></strong></p>
+      <p style="text-align: center;">Após inserir as informações, você será redirecionado para a sala privada e anônima.</p>
       <input id="username" placeholder="Seu nome">
       <input id="room" placeholder="Nome da sala">
       <button onclick="joinRoom()">Entrar</button>
@@ -149,119 +233,100 @@
   <script>
     const socket = io();
     let username = "", room = "", secretKey;
-    const messageStatus = {};
 
-    function showModal() {
-      document.getElementById("modal").style.display = "flex";
+    function setUserStatus(status) {
+      const s = document.getElementById('user-status');
+      const ind = document.getElementById('status-indicator');
+      s.textContent = status === 'online' ? 'Online' : 'Offline';
+      ind.style.background = status === 'online' ? 'green' : 'gray';
     }
 
-    socket.on("key", key => secretKey = key);
+    setUserStatus('online');
+    
+    // Função para esconder a tela de boas-vindas e mostrar o modal de login
+    function showLoginModal() {
+      document.getElementById('welcome-screen').style.display = 'none';
+      document.getElementById('modal').style.display = 'flex';
+    }
+
+    function showModal() { document.getElementById('modal').style.display = 'flex'; }
+    socket.on('key', key => secretKey = key);
 
     function joinRoom() {
-      username = document.getElementById("username").value;
-      room = document.getElementById("room").value;
+      username = document.getElementById('username').value;
+      room = document.getElementById('room').value;
       if (!username || !room) return;
-      socket.emit("join_room", room);
-      document.getElementById("modal").style.display = "none";
+      socket.emit('join_room', room);
+      document.getElementById('modal').style.display = 'none';
       loadMessages();
     }
 
     function encryptMessage(text, keyHex) {
       const key = CryptoJS.enc.Hex.parse(keyHex);
       const iv = CryptoJS.lib.WordArray.random(16);
-      const encrypted = CryptoJS.AES.encrypt(text, key, { iv, mode: CryptoJS.mode.CBC });
-      return iv.toString(CryptoJS.enc.Hex) + encrypted.ciphertext.toString(CryptoJS.enc.Hex);
+      const enc = CryptoJS.AES.encrypt(text, key, { iv, mode: CryptoJS.mode.CBC });
+      return iv.toString() + enc.ciphertext.toString();
     }
 
     function decryptMessage(dataHex, keyHex) {
       const key = CryptoJS.enc.Hex.parse(keyHex);
       const iv = CryptoJS.enc.Hex.parse(dataHex.slice(0, 32));
-      const encrypted = CryptoJS.enc.Hex.parse(dataHex.slice(32));
-      const decrypted = CryptoJS.AES.decrypt({ ciphertext: encrypted }, key, { iv, mode: CryptoJS.mode.CBC });
-      return decrypted.toString(CryptoJS.enc.Utf8);
+      const ct = CryptoJS.enc.Hex.parse(dataHex.slice(32));
+      return CryptoJS.AES.decrypt({ ciphertext: ct }, key, { iv, mode: CryptoJS.mode.CBC }).toString(CryptoJS.enc.Utf8);
     }
 
-    socket.on("receive_message", encrypted => {
-      const decrypted = decryptMessage(encrypted, secretKey);
-      const isMine = decrypted.startsWith("[" + username + "]:");
-      const text = decrypted.split("]: ")[1];
-      const time = new Date().toLocaleTimeString();
+    socket.on('receive_message', encrypted => {
+      const dec = decryptMessage(encrypted, secretKey);
+      const mine = dec.startsWith('[' + username + ']:' );
+      const txt = dec.split(']: ')[1];
+      const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
       const id = Date.now() + Math.random();
-      addMessage(text, isMine ? 'you' : 'other', time, id);
-      saveMessage(text, isMine ? 'you' : 'other', time, id);
-      if (!isMine) {
-        socket.emit("message_seen", { room, id, user: username });
-      }
+      addMessage(txt, mine ? 'you' : 'other', time, id);
     });
 
-    socket.on("update_seen", ({ id, user }) => {
-      const seen = document.querySelector(`[data-id='${id}'] .seen-by`);
-      if (seen && !seen.innerText.includes(user)) {
-        seen.innerText += ` ${user}`;
-      }
+    socket.on('receive_audio', ({ audioBase64, username }) => {
+      const audioTag = `<audio controls src="data:audio/webm;base64,${audioBase64}" style="max-width: 200px;"></audio>`;
+      const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      const id = Date.now() + Math.random();
+      addMessage(audioTag, 'other', time, id);
+    });
+
+    socket.on('update_seen', ({ id }) => {
+      const status = document.querySelector(`[data-id='${id}'] .message-status`);
+      if (status) status.textContent = '✓✓';
     });
 
     function sendMessage() {
-      const msg = document.getElementById("messageInput").value;
+      const msg = document.getElementById('messageInput').value;
       if (!msg || !room || !username) return;
-      const fullMsg = `[${username}]: ${msg}`;
-      const encrypted = encryptMessage(fullMsg, secretKey);
+      const full = `[${username}]: ${msg}`;
+      const enc = encryptMessage(full, secretKey);
       const id = Date.now() + Math.random();
-      socket.emit("send_message", { room, message: encrypted, id });
-      const time = new Date().toLocaleTimeString();
+      socket.emit('send_message', { room, message: enc, id });
+      const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
       addMessage(msg, 'you', time, id);
-      saveMessage(msg, 'you', time, id);
-      document.getElementById("messageInput").value = "";
+      document.getElementById('messageInput').value = '';
     }
 
     function addMessage(text, type, time, id) {
-      const chat = document.getElementById("chat");
-      const div = document.createElement("div");
-      div.className = `message ${type}`;
-      div.setAttribute("data-id", id);
-      div.innerHTML = `${text} <span class="message-time">${time}</span>
-      ${type === 'you' ? '<div class="seen-by">Visto por:</div>' : ''}`;
-      chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
-    }
-
-    function saveMessage(text, type, time, id) {
-      const messages = JSON.parse(localStorage.getItem('messages') || '[]');
-      messages.push({ text, type, time, id });
-      localStorage.setItem('messages', JSON.stringify(messages));
+      const div = document.createElement('div');
+      div.classList.add('message', type);
+      div.dataset.id = id;
+      div.innerHTML = `
+        <span class="message-text">${text}</span>
+        <span class="message-time">${time}</span>
+        <span class="message-status">...</span>
+      `;
+      document.getElementById('chat').appendChild(div);
+      setTimeout(() => {
+        document.querySelector(`[data-id='${id}'] .message-status`).textContent = '✓';
+      }, 1000);
     }
 
     function loadMessages() {
-      const messages = JSON.parse(localStorage.getItem('messages') || '[]');
-      messages.forEach(msg => addMessage(msg.text, msg.type, msg.time, msg.id));
-    }
-
-    function handleImageUpload(event) {
-      const file = event.target.files[0];
-      if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const imageData = e.target.result;
-          const time = new Date().toLocaleTimeString();
-          const id = Date.now() + Math.random();
-          addImageMessage(imageData, 'you', time, id);
-          saveMessage('Imagem enviada', 'you', time, id);
-          socket.emit("send_message", { room, message: encryptMessage(`[${username}]: [imagem]`, secretKey), id });
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    function addImageMessage(imageData, type, time, id) {
-      const chat = document.getElementById("chat");
-      const div = document.createElement("div");
-      div.className = `message ${type}`;
-      div.setAttribute("data-id", id);
-      div.innerHTML = `<img src="${imageData}" alt="Imagem enviada"> <span class="message-time">${time}</span>
-      ${type === 'you' ? '<div class="seen-by">Visto por:</div>' : ''}`;
-      chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
+      socket.emit('load_messages', room);
     }
   </script>
 </body>
 </html>
+
