@@ -14,6 +14,7 @@
       display: flex;
       flex-direction: column;
       height: 100vh;
+      overflow: hidden;
     }
     .header {
       background-color: #333;
@@ -285,7 +286,7 @@
     });
 
     socket.on('receive_audio', ({ audioBase64, username }) => {
-      const audioTag = `<audio controls src="data:audio/webm;base64,${audioBase64}" style="max-width: 200px;"></audio>`; 
+      const audioTag = `<audio controls src="data:audio/webm;base64,${audioBase64}" style="max-width: 200px;"></audio>`;
       const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
       const id = Date.now() + Math.random();
       addMessage(audioTag, 'other', time, id);
@@ -306,6 +307,10 @@
       const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
       addMessage(msg, 'you', time, id);
       document.getElementById('messageInput').value = '';
+
+      const audio = new Audio('https://upload.wikimedia.org/wikipedia/commons/f/f9/Beep_example.ogg');
+audio.play();
+
     }
 
     function addMessage(text, type, time, id) {
