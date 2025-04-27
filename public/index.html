@@ -66,28 +66,31 @@
     </div>
   </header>
 
-  <div id="chat-app">
-    <!-- Chat Tab -->
-    <div id="chat-tab">
-      <div class="dm-container">
-        <div class="dm-chat">
-          <div class="chat-messages" id="messages" style="max-height: 400px; overflow-y: auto; padding-bottom: 20px;"></div>
-          <div class="chat-footer">
-            <button class="icon-button" title="Enviar Foto">
-              <svg viewBox="0 0 24 24"><path d="M21 19V5a2 2 0 0 0-2-2H5c-1.105 0-2 .895-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-            </button>
-            <input type="text" id="msgInput" placeholder="Mensagem...">
-            <button class="icon-button" id="micButton" title="Gravar Áudio"> 
-			<span id="recIndicator" style="color:#ff4f4f; font-size:14px; margin-left:8px; display:inline-block;"></span>
-              <svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0h-2zM12 19v4m-4-2h8"/></svg>
-            </button>
-            <button class="icon-button" title="Enviar" onclick="sendText()">
-              <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
-            </button>
-          </div>
+ <div id="chat-app">
+  <!-- Chat Tab -->
+  <div id="chat-tab">
+    <div class="dm-container">
+      <div class="dm-chat">
+        <!-- Container de mensagens -->
+        <div class="chat-messages" id="messages" style="max-height: 400px; overflow-y: auto; padding-bottom: 20px;"></div>
+        <div class="chat-footer">
+          <button class="icon-button" title="Enviar Foto">
+            <svg viewBox="0 0 24 24"><path d="M21 19V5a2 2 0 0 0-2-2H5c-1.105 0-2 .895-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+          </button>
+          <input type="text" id="msgInput" placeholder="Mensagem...">
+          <button class="icon-button" id="micButton" title="Gravar Áudio"> 
+            <span id="recIndicator" style="color:#ff4f4f; font-size:14px; margin-left:8px; display:inline-block;"></span>
+            <svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0h-2zM12 19v4m-4-2h8"/></svg>
+          </button>
+          <button class="icon-button" title="Enviar" onclick="sendText()">
+            <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+          </button>
         </div>
       </div>
     </div>
+  </div>
+</div>
+
 
     <!-- Search Tab -->
     <div id="search-tab">
