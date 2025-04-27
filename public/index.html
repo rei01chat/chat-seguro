@@ -92,6 +92,59 @@
 <script>
   // Corrigir a rolagem automática para as mensagens
   const messagesContainer = document.getElementById('messages');
+  const inputField = document.getElementById('msgInput');
+
+  // Função para rolar as mensagens para o final
+  function scrollToBottom() {
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  // Ajustar layout para diferentes tamanhos de tela
+  function adjustLayout() {
+    var footer = document.querySelector('.chat-footer');
+    var viewportHeight = window.innerHeight;
+    var footerHeight = footer.offsetHeight;
+    var messagesHeight = viewportHeight - footerHeight - 20; // Subtrai altura do rodapé e algum espaçamento
+
+    // Ajusta a altura da área das mensagens
+    messagesContainer.style.maxHeight = messagesHeight + 'px';
+  }
+
+  // Ajuste dinâmico ao carregar a página
+  window.onload = function() {
+    adjustLayout();
+    scrollToBottom();
+  };
+
+  // Garantir que a rolagem seja atualizada quando o usuário redimensionar a tela
+  window.addEventListener('resize', function() {
+    adjustLayout();
+    scrollToBottom();
+  });
+
+  // Evitar zoom no celular quando o campo de texto é clicado
+  inputField.addEventListener('focus', function() {
+    document.body.style.zoom = '100%'; // Evita zoom ao clicar no campo de input
+  });
+
+  // Função para enviar mensagem de texto
+  function sendText() {
+    var message = inputField.value.trim();
+    if (message) {
+      var newMessage = document.createElement('div');
+      newMessage.textContent = message;
+      newMessage.style.textAlign = 'center'; // Centraliza a mensagem
+      newMessage.style.marginBottom = '10px'; // Espaço entre as mensagens
+      messagesContainer.appendChild(newMessage);
+
+      inputField.value = ''; // Limpa o campo de mensagem
+      scrollToBottom();
+    }
+  }
+</script>
+<script>
+  // Corrigir a rolagem automática para as mensagens
+  const messagesContainer = document.getElementById('messages');
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
   // Ajuste para rolagem sempre na parte inferior ao adicionar mensagens
