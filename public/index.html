@@ -219,11 +219,20 @@
       inp.value = '';
     }
 
-   // → Novo bloco para gravação com contador e notificações
+ // → Novo bloco para gravação com contador e notificações
 let mediaRecorder, audioChunks = [], recInterval;
 const recIndicator = document.getElementById('recIndicator');
 const startSound = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
 const sendSound  = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
+
+// Função para verificar o dispositivo e retornar o formato de áudio
+function getAudioFormat() {
+  const userAgent = navigator.userAgent;
+  if (userAgent.includes('iPhone')) {
+    return 'audio/mp4';  // Formato compatível com iPhone
+  }
+  return 'audio/webm';  // Formato para Android e PC
+}
 
 // Função para garantir que os outros botões continuem funcionando
 document.getElementById('micButton').addEventListener('click', async (event) => {
@@ -259,18 +268,18 @@ document.getElementById('micButton').addEventListener('click', async (event) => 
     mediaRecorder.onstop = () => {
       clearInterval(recInterval);
       recIndicator.textContent = '';
-      const blob = new Blob(audioChunks, { type: 'audio/webm' });
+      const blob = new Blob(audioChunks, { type: getAudioFormat() }); // Usar o formato correto
       const reader = new FileReader();
       reader.onload = () => {
         const b64 = reader.result.split(',')[1];
         const payload = `[${username}]:[AUDIO]${b64}`;
-        const enc     = encrypt(payload);
+        const enc = encrypt(payload);
 
         // Emitir a mensagem via socket para a sala correta
         socket.emit('send_message', { room, message: enc });
 
         // Exibir o áudio que você enviou na sua interface também
-        const audioHTML = `<audio controls src="data:audio/webm;base64,${b64}"></audio>`;
+        const audioHTML = `<audio controls src="data:${getAudioFormat()};base64,${b64}"></audio>`;
         addBubble(audioHTML, true); // Adiciona o áudio enviado na sua tela
       };
       reader.readAsDataURL(blob);
@@ -285,7 +294,7 @@ socket.on('receive_message', (data) => {
 
   if (txt.includes('[AUDIO]')) {
     const [head, b64] = txt.split('[AUDIO]');
-    const audioHTML = `<audio controls src="data:audio/webm;base64,${b64}"></audio>`;
+    const audioHTML = `<audio controls src="data:${getAudioFormat()};base64,${b64}"></audio>`;
 
     // Exibe o áudio recebido tanto para você quanto para o outro usuário
     addBubble(audioHTML, false); // Exibe o áudio na tela do outro usuário
