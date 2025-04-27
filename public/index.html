@@ -77,16 +77,20 @@
               <svg viewBox="0 0 24 24"><path d="M21 19V5a2 2 0 0 0-2-2H5c-1.105 0-2 .895-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
             </button>
             <input type="text" id="msgInput" placeholder="Mensagem...">
-            <button class="icon-button" id="micButton" title="Gravar Áudio">
-              <svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0h-2zM12 19v4m-4-2h8"/></svg>
-            </button>
-            <button class="icon-button" title="Enviar" onclick="sendText()">
-              <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+           <button class="icon-button" id="micButton" title="Gravar Áudio">
+    <svg viewBox="0 0 24 24">
+        <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0h-2zM12 19v4m-4-2h8"/>
+    </svg>
+</button>
+<button class="icon-button" title="Enviar" id="sendAudioButton" onclick="sendAudio()">
+    <svg viewBox="0 0 24 24">
+        <path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/>
+    </svg>
+</button>
+
+<!-- Indicador de Gravação -->
+<div id="recIndicator" style="display: none;">Gravando...</div>
+
 
     <!-- Search Tab -->
     <div id="search-tab">
@@ -218,39 +222,88 @@
       inp.value = '';
     }
 
-    document.getElementById('micButton').onclick = async () => {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
-      const chunks = [];
-      recorder.ondataavailable = e => chunks.push(e.data);
-      recorder.onstop = () => {
+   let recorder;  // Variável para o MediaRecorder
+let isRecording = false;  // Controle de gravação
+let chunks = [];  // Armazena os dados da gravação
+
+// Função para iniciar/pause a gravação
+document.getElementById('micButton').onclick = async () => {
+    if (!isRecording) {
+        // Começar a gravação
+        new Audio('gravando-audio-som.mp3').play();  // Som de início de gravação
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        recorder = new MediaRecorder(stream);
+        
+        recorder.ondataavailable = e => chunks.push(e.data);
+        recorder.onstop = () => {
+            const blob = new Blob(chunks, { type: 'audio/webm' });
+            const reader = new FileReader();
+            reader.onload = () => {
+                const b64 = reader.result.split(',')[1];
+                if (b64) {
+                    const payload = `[${username}]:[AUDIO]${b64}`;
+                    const enc = encrypt(payload);
+                    socket.emit('send_message', { room, message: enc });
+                    addBubble('📢 Áudio', true);
+                    new Audio('audio-enviado.mp3').play();  // Som de envio
+                } else {
+                    console.error("Erro ao converter o áudio para base64.");
+                }
+            };
+            reader.readAsDataURL(blob);
+        };
+        
+        recorder.start();
+        isRecording = true;  // Atualiza o estado para 'gravando'
+        // Exibir indicador de "Gravando..."
+        document.getElementById('recIndicator').style.display = 'inline';  // Mostrar indicador "Gravando..."
+        
+    } else {
+        // Pausar a gravação
+        recorder.stop();
+        isRecording = false;  // Atualiza o estado para 'pausado'
+        // Esconder o indicador de gravação
+        document.getElementById('recIndicator').style.display = 'none';  // Esconder indicador "Gravando..."
+        new Audio('pausar-audio-som.mp3').play();  // Som de pausa
+    }
+};
+
+// Função de Enviar Áudio
+function sendAudio() {
+    if (chunks.length > 0) {
         const blob = new Blob(chunks, { type: 'audio/webm' });
         const reader = new FileReader();
         reader.onload = () => {
-          const b64 = reader.result.split(',')[1];
-          const payload = `[${username}]:[AUDIO]${b64}`;
-          const enc     = encrypt(payload);
-          socket.emit('send_message', { room, message: enc });
-          addBubble('📢 Áudio', true);
+            const b64 = reader.result.split(',')[1];
+            const payload = `[${username}]:[AUDIO]${b64}`;
+            const enc = encrypt(payload);
+            socket.emit('send_message', { room, message: enc });
+            addBubble('📢 Áudio', true);
+            new Audio('audio-enviado.mp3').play();  // Som de envio
         };
         reader.readAsDataURL(blob);
-      };
-      recorder.start();
-      setTimeout(() => recorder.stop(), 5000);
-    };
+    } else {
+        console.error("Sem áudio para enviar.");
+    }
+}
 
-    socket.on('receive_message', data => {
-      const encrypted = data.message || data;
-      const txt = decrypt(encrypted);
-      if (txt.includes('[AUDIO]')) {
+// Quando o áudio é recebido
+socket.on('receive_message', data => {
+    const encrypted = data.message || data;
+    const txt = decrypt(encrypted);
+    if (txt.includes('[AUDIO]')) {
         const [head, b64] = txt.split('[AUDIO]');
-        const audioHTML = `<audio controls src="data:audio/webm;base64,${b64}"></audio>`;
-        addBubble(head + audioHTML, false);
-      } else {
+        if (b64) {
+            const audioHTML = `<audio controls src="data:audio/webm;base64,${b64}"></audio>`;
+            addBubble(head + audioHTML, false);
+        } else {
+            console.error("Erro ao receber áudio: Base64 não encontrado.");
+        }
+    } else {
         const content = txt.split(']: ')[1];
         addBubble(content, false);
-      }
-    });
+    }
+});
 
     function showTab(tab) {
       document.getElementById('chat-tab').style.display   = tab === 'chat' ? 'block' : 'none';
