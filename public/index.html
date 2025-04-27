@@ -71,7 +71,7 @@
     <div class="dm-container">
       <div class="dm-chat">
         <div class="chat-messages" id="messages" style="max-height: 400px; overflow-y: auto; padding-bottom: 20px;"></div>
-		
+
         <div class="chat-footer">
           <button class="icon-button" title="Enviar Foto">
             <svg viewBox="0 0 24 24"><path d="M21 19V5a2 2 0 0 0-2-2H5c-1.105 0-2 .895-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
@@ -102,11 +102,8 @@ function scrollToBottom() {
 
 // Ajuste o layout para garantir que a área de mensagens ocupe o espaço correto
 function adjustLayout() {
-  // Como o chat-app tem altura de 100vh e é um flex container, ele vai ajustar a área das mensagens automaticamente
   let footerHeight = document.querySelector('.chat-footer').offsetHeight;
   let appHeight = chatApp.clientHeight;
-
-  // Ajuste a altura da área de mensagens
   messagesContainer.style.maxHeight = (appHeight - footerHeight - 20) + 'px';
   scrollToBottom(); // Sempre rola para o fundo após ajustes
 }
@@ -122,80 +119,64 @@ inputField.addEventListener('focus', function() {
   document.body.style.zoom = '100%'; // Evita o zoom no celular
 });
 
-  // Corrigir a rolagem automática para as mensagens
-  const messagesContainer = document.getElementById('messages');
-  const inputField = document.getElementById('msgInput');
+// Função para enviar mensagem de texto
+function sendText() {
+  var message = inputField.value.trim();
+  if (message) {
+    var newMessage = document.createElement('div');
+    newMessage.textContent = message;
+    newMessage.style.textAlign = 'center'; // Centraliza a mensagem
+    newMessage.style.marginBottom = '10px'; // Espaço entre as mensagens
+    messagesContainer.appendChild(newMessage);
 
-  // Função para rolar as mensagens para o final
-  function scrollToBottom() {
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-  }
-
-  // Ajustar layout para diferentes tamanhos de tela
-  function adjustLayout() {
-    var footer = document.querySelector('.chat-footer');
-    var viewportHeight = window.innerHeight;
-    var footerHeight = footer.offsetHeight;
-    var messagesHeight = viewportHeight - footerHeight - 20; // Subtrai altura do rodapé e algum espaçamento
-
-    // Ajusta a altura da área das mensagens
-    messagesContainer.style.maxHeight = messagesHeight + 'px';
-  }
-
-  // Ajuste dinâmico ao carregar a página
-  window.onload = function() {
-    adjustLayout();
+    inputField.value = ''; // Limpa o campo de mensagem
     scrollToBottom();
-  };
-
-  // Garantir que a rolagem seja atualizada quando o usuário redimensionar a tela
-  window.addEventListener('resize', function() {
-    adjustLayout();
-    scrollToBottom();
-  });
-
-  // Evitar zoom no celular quando o campo de texto é clicado
-  inputField.addEventListener('focus', function() {
-    document.body.style.zoom = '100%'; // Evita zoom ao clicar no campo de input
-  });
-
-  // Função para enviar mensagem de texto
-  function sendText() {
-    var message = inputField.value.trim();
-    if (message) {
-      var newMessage = document.createElement('div');
-      newMessage.textContent = message;
-      newMessage.style.textAlign = 'center'; // Centraliza a mensagem
-      newMessage.style.marginBottom = '10px'; // Espaço entre as mensagens
-      messagesContainer.appendChild(newMessage);
-
-      inputField.value = ''; // Limpa o campo de mensagem
-      scrollToBottom();
-    }
   }
+}
+
+// Para alternar entre abas (chat, busca, salas)
+function showTab(tab) {
+  document.getElementById('chat-tab').style.display = (tab === 'chat') ? 'block' : 'none';
+  document.getElementById('search-tab').style.display = (tab === 'search') ? 'block' : 'none';
+  document.getElementById('rooms-tab').style.display = (tab === 'rooms') ? 'block' : 'none';
+
+  // Forçar uma atualização no layout após mudar de tab
+  setTimeout(() => {
+    const activeTab = document.querySelector('.active');
+    if (activeTab) activeTab.scrollIntoView({ behavior: 'smooth' });
+  }, 100);
+}
+
+/* Para telas pequenas */
+@media (max-width: 768px) {
+  #chat-tab, #search-tab, #rooms-tab {
+    display: block; /* Garantir que os tabs se comportem de forma simples */
+    width: 100%;
+    height: calc(100vh - 60px); /* Ajuste para que o chat ocupe a tela inteira sem problemas */
+    overflow-y: auto;
+  }
+
+  #bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999; /* Garante que a navegação inferior fique visível em todas as telas */
+    height: 60px;
+  }
+
+  #messages {
+    flex-direction: column;
+    height: calc(100vh - 60px); /* Garantir que o conteúdo de mensagens preencha o restante da tela */
+    overflow-y: auto;
+  }
+  
+  #msgInput {
+    width: calc(100% - 20px);
+    padding: 10px;
+  }
+}
 </script>
-<script>
-  // Corrigir a rolagem automática para as mensagens
-  const messagesContainer = document.getElementById('messages');
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-  // Ajuste para rolagem sempre na parte inferior ao adicionar mensagens
-  function scrollToBottom() {
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-  }
-
-  // Garantir que a rolagem seja atualizada quando o usuário redimensionar a tela
-  window.addEventListener('resize', function() {
-    scrollToBottom();
-  });
-
-  // Evitar zoom quando o campo de texto é clicado no celular
-  document.getElementById('msgInput').addEventListener('focus', function() {
-    document.body.style.zoom = '100%'; // Evita o zoom ao clicar no campo de input
-  });
-</script>
-
-
 
     <!-- Search Tab -->
     <div id="search-tab">
