@@ -66,29 +66,140 @@
     </div>
   </header>
 <div id="chat-app">
-  <!-- Chat Tab -->
-  <div id="chat-tab">
-    <div class="dm-container">
-      <div class="dm-chat">
-        <div class="chat-messages" id="messages" style="max-height: 400px; overflow-y: auto; padding-bottom: 20px;"></div>
+ <!-- Chat Tab -->
+<div id="chat-tab">
+  <div class="dm-container">
+    <div class="dm-chat">
+      <div class="chat-messages" id="messages" style="max-height: 400px; overflow-y: auto; padding-bottom: 20px;"></div>
 
-        <div class="chat-footer">
-          <button class="icon-button" title="Enviar Foto">
-            <svg viewBox="0 0 24 24"><path d="M21 19V5a2 2 0 0 0-2-2H5c-1.105 0-2 .895-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-          </button>
-          <input type="text" id="msgInput" placeholder="Mensagem...">
-          <button class="icon-button" id="micButton" title="Gravar Áudio">
-            <span id="recIndicator" style="color:#ff4f4f; font-size:14px; margin-left:8px; display:inline-block;"></span>
-            <svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0h-2zM12 19v4m-4-2h8"/></svg>
-          </button>
-          <button class="icon-button" title="Enviar" onclick="sendText()">
-            <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
-          </button>
-        </div>
+      <!-- Chat Footer -->
+      <div class="chat-footer">
+        <!-- Photo Button -->
+        <button class="icon-button" title="Enviar Foto">
+          <svg viewBox="0 0 24 24"><path d="M21 19V5a2 2 0 0 0-2-2H5c-1.105 0-2 .895-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+        </button>
+
+        <!-- Input Message -->
+        <input type="text" id="msgInput" placeholder="Mensagem..." class="msg-input">
+
+        <!-- Microphone Button for Audio -->
+        <button class="icon-button" id="micButton" title="Gravar Áudio">
+          <span id="recIndicator" style="color:#ff4f4f; font-size:14px; margin-left:8px; display:inline-block;"></span>
+          <svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0h-2zM12 19v4m-4-2h8"/></svg>
+        </button>
+
+        <!-- Send Button -->
+        <button class="icon-button" title="Enviar" onclick="sendText()">
+          <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+        </button>
       </div>
     </div>
   </div>
 </div>
+
+<style>
+  /* General Styling */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1C1C1C;
+    color: #fff;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Chat Container */
+  .dm-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  /* Chat Area */
+  .dm-chat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Chat Messages */
+  .chat-messages {
+    flex: 1;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+  }
+
+  /* Chat Footer Styling */
+  .chat-footer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background: #222;
+    border-top: 1px solid #333;
+  }
+
+  .chat-footer input[type="text"] {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 20px;
+    border: none;
+    background: #333;
+    color: #fff;
+    font-size: 14px;
+    transition: background 0.3s ease-in-out;
+  }
+
+  .chat-footer input[type="text"]:focus {
+    background: #444;
+  }
+
+  /* Icon Button Styling */
+  .icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .icon-button svg {
+    fill: #fff;
+    width: 24px;
+    height: 24px;
+  }
+
+  .icon-button:hover {
+    transform: scale(1.2);
+  }
+
+  /* Microphone Recording Indicator */
+  #recIndicator {
+    display: none;
+  }
+
+  /* Additional Styling for Message Input */
+  .msg-input {
+    padding: 10px 14px;
+    border-radius: 20px;
+    border: none;
+    background: #333;
+    color: #fff;
+    font-size: 14px;
+  }
+</style>
 
 <script>
 const messagesContainer = document.getElementById('messages');
