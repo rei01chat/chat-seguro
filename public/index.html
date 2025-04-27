@@ -219,19 +219,16 @@
       inp.value = '';
     }
 
- // → Novo bloco para gravação com contador e notificações
+// → Novo bloco para gravação com contador e notificações
 let mediaRecorder, audioChunks = [], recInterval;
 const recIndicator = document.getElementById('recIndicator');
 const startSound = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
 const sendSound  = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
 
-// Função para verificar o dispositivo e retornar o formato de áudio
+// Função para garantir o formato de áudio adequado
 function getAudioFormat() {
-  const userAgent = navigator.userAgent;
-  if (userAgent.includes('iPhone')) {
-    return 'audio/mp4';  // Formato compatível com iPhone
-  }
-  return 'audio/webm';  // Formato para Android e PC
+  // Sempre enviar no formato compatível com iPhone (mp4 ou aac)
+  return 'audio/mp4';  // Ou 'audio/aac', conforme necessidade
 }
 
 // Função para garantir que os outros botões continuem funcionando
@@ -311,7 +308,6 @@ document.querySelectorAll('.bottom-button').forEach(button => {
     // Aqui você pode adicionar o código para os outros botões (como pesquisa, entrar na sala, enviar mensagens)
   });
 });
-
 
     function showTab(tab) {
       document.getElementById('chat-tab').style.display   = tab === 'chat' ? 'block' : 'none';
