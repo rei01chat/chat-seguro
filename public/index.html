@@ -77,7 +77,8 @@
               <svg viewBox="0 0 24 24"><path d="M21 19V5a2 2 0 0 0-2-2H5c-1.105 0-2 .895-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
             </button>
             <input type="text" id="msgInput" placeholder="Mensagem...">
-            <button class="icon-button" id="micButton" title="Gravar Áudio">
+            <button class="icon-button" id="micButton" title="Gravar Áudio"> 
+			<span id="recIndicator" style="color:#ff4f4f; font-size:14px; margin-left:8px; display:inline-block;"></span>
               <svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0h-2zM12 19v4m-4-2h8"/></svg>
             </button>
             <button class="icon-button" title="Enviar" onclick="sendText()">
@@ -218,39 +219,89 @@
       inp.value = '';
     }
 
-    document.getElementById('micButton').onclick = async () => {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
-      const chunks = [];
-      recorder.ondataavailable = e => chunks.push(e.data);
-      recorder.onstop = () => {
-        const blob = new Blob(chunks, { type: 'audio/webm' });
-        const reader = new FileReader();
-        reader.onload = () => {
-          const b64 = reader.result.split(',')[1];
-          const payload = `[${username}]:[AUDIO]${b64}`;
-          const enc     = encrypt(payload);
-          socket.emit('send_message', { room, message: enc });
-          addBubble('📢 Áudio', true);
-        };
-        reader.readAsDataURL(blob);
-      };
-      recorder.start();
-      setTimeout(() => recorder.stop(), 5000);
-    };
+   // → Novo bloco para gravação com contador e notificações
+let mediaRecorder, audioChunks = [], recInterval;
+const recIndicator = document.getElementById('recIndicator');
+const startSound = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
+const sendSound  = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
 
-    socket.on('receive_message', data => {
-      const encrypted = data.message || data;
-      const txt = decrypt(encrypted);
-      if (txt.includes('[AUDIO]')) {
-        const [head, b64] = txt.split('[AUDIO]');
+// Função para garantir que os outros botões continuem funcionando
+document.getElementById('micButton').addEventListener('click', async (event) => {
+  event.stopPropagation(); // Garante que o evento não afete outros elementos
+
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    // parar
+    mediaRecorder.stop();
+    clearInterval(recInterval);
+    recIndicator.textContent = '';
+    sendSound.play();
+    mediaRecorder = null;
+  } else {
+    // começar
+    startSound.play();
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.start();
+
+    // contador MM:SS
+    let seconds = 0;
+    recIndicator.textContent = '00:00';
+    recInterval = setInterval(() => {
+      seconds++;
+      const m = String(Math.floor(seconds/60)).padStart(2,'0');
+      const s = String(seconds%60).padStart(2,'0');
+      recIndicator.textContent = `${m}:${s}`;
+    }, 1000);
+
+    // ao parar, envia o áudio
+    mediaRecorder.onstop = () => {
+      clearInterval(recInterval);
+      recIndicator.textContent = '';
+      const blob = new Blob(audioChunks, { type: 'audio/webm' });
+      const reader = new FileReader();
+      reader.onload = () => {
+        const b64 = reader.result.split(',')[1];
+        const payload = `[${username}]:[AUDIO]${b64}`;
+        const enc     = encrypt(payload);
+
+        // Emitir a mensagem via socket para a sala correta
+        socket.emit('send_message', { room, message: enc });
+
+        // Exibir o áudio que você enviou na sua interface também
         const audioHTML = `<audio controls src="data:audio/webm;base64,${b64}"></audio>`;
-        addBubble(head + audioHTML, false);
-      } else {
-        const content = txt.split(']: ')[1];
-        addBubble(content, false);
-      }
-    });
+        addBubble(audioHTML, true); // Adiciona o áudio enviado na sua tela
+      };
+      reader.readAsDataURL(blob);
+    };
+  }
+});
+
+// Escutando as mensagens recebidas
+socket.on('receive_message', (data) => {
+  const encrypted = data.message || data;
+  const txt = decrypt(encrypted);
+
+  if (txt.includes('[AUDIO]')) {
+    const [head, b64] = txt.split('[AUDIO]');
+    const audioHTML = `<audio controls src="data:audio/webm;base64,${b64}"></audio>`;
+
+    // Exibe o áudio recebido tanto para você quanto para o outro usuário
+    addBubble(audioHTML, false); // Exibe o áudio na tela do outro usuário
+  } else {
+    const content = txt.split(']: ')[1];
+    addBubble(content, false);
+  }
+});
+
+// Prevenir comportamento padrão para os outros botões
+document.querySelectorAll('.bottom-button').forEach(button => {
+  button.addEventListener('click', (event) => {
+    event.stopPropagation();
+    // Aqui você pode adicionar o código para os outros botões (como pesquisa, entrar na sala, enviar mensagens)
+  });
+});
 
     function showTab(tab) {
       document.getElementById('chat-tab').style.display   = tab === 'chat' ? 'block' : 'none';
