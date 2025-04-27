@@ -71,6 +71,7 @@
     <div class="dm-container">
       <div class="dm-chat">
         <div class="chat-messages" id="messages" style="max-height: 400px; overflow-y: auto; padding-bottom: 20px;"></div>
+		
         <div class="chat-footer">
           <button class="icon-button" title="Enviar Foto">
             <svg viewBox="0 0 24 24"><path d="M21 19V5a2 2 0 0 0-2-2H5c-1.105 0-2 .895-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
@@ -90,6 +91,37 @@
 </div>
 
 <script>
+const messagesContainer = document.getElementById('messages');
+const inputField = document.getElementById('msgInput');
+const chatApp = document.getElementById('chat-app');
+
+// Função para rolar para o fundo da área de mensagens
+function scrollToBottom() {
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+// Ajuste o layout para garantir que a área de mensagens ocupe o espaço correto
+function adjustLayout() {
+  // Como o chat-app tem altura de 100vh e é um flex container, ele vai ajustar a área das mensagens automaticamente
+  let footerHeight = document.querySelector('.chat-footer').offsetHeight;
+  let appHeight = chatApp.clientHeight;
+
+  // Ajuste a altura da área de mensagens
+  messagesContainer.style.maxHeight = (appHeight - footerHeight - 20) + 'px';
+  scrollToBottom(); // Sempre rola para o fundo após ajustes
+}
+
+// Ajusta o layout na primeira carga da página
+window.onload = adjustLayout;
+
+// Ajusta o layout quando a janela for redimensionada
+window.addEventListener('resize', adjustLayout);
+
+// Evita zoom no celular quando o campo de texto é clicado
+inputField.addEventListener('focus', function() {
+  document.body.style.zoom = '100%'; // Evita o zoom no celular
+});
+
   // Corrigir a rolagem automática para as mensagens
   const messagesContainer = document.getElementById('messages');
   const inputField = document.getElementById('msgInput');
