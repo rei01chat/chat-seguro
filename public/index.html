@@ -225,9 +225,9 @@ const recIndicator = document.getElementById('recIndicator');
 const startSound = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
 const sendSound  = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
 
-// Função para garantir que o áudio seja sempre enviado no formato compatível com iPhone
+// Função para garantir que o áudio seja sempre enviado no formato compatível com iPhone (audio/mp4 ou audio/aac)
 function getAudioFormat() {
-  return 'audio/mp4';  // Forçar o formato compatível com iPhone
+  return 'audio/mp4';  // Forçar o formato compatível com iPhone (ou audio/aac)
 }
 
 // Função para garantir que os outros botões continuem funcionando
@@ -264,7 +264,7 @@ document.getElementById('micButton').addEventListener('click', async (event) => 
     mediaRecorder.onstop = () => {
       clearInterval(recInterval);
       recIndicator.textContent = '';
-      const blob = new Blob(audioChunks, { type: getAudioFormat() }); // Usar sempre o formato de iPhone
+      const blob = new Blob(audioChunks, { type: getAudioFormat() }); // Forçar tipo de áudio iPhone
       const reader = new FileReader();
       reader.onload = () => {
         const b64 = reader.result.split(',')[1];
