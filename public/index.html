@@ -3,334 +3,263 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat Seguro</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <title>Chat Seguro - Estilo Instagram</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #222;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
-    }
-    .header {
-      background-color: #333;
-      padding: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: #fff;
-      border-bottom: 2px solid #555;
-    }
-    .header .header-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    #status-indicator {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background-color: green;
-    }
-    #chat {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      background-color: #222;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .message {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 12px;
-      border-radius: 8px;
-      max-width: 75%;
-      font-size: 14px;
-      line-height: 1.4;
-      word-wrap: break-word;
-      position: relative;
-    }
-    .message.you {
-      align-self: flex-end;
-      background-color: #007bff;
-      color: #fff;
-    }
-    .message.other {
-      align-self: flex-start;
-      background-color: #555;
-      color: #fff;
-    }
-    .message-time {
-      font-size: 12px;
-      color: #ccc;
-      margin-left: 8px;
-      white-space: nowrap;
-    }
-    .message-status {
-      font-size: 12px;
-      color: #ccc;
-      margin-left: 4px;
-      white-space: nowrap;
-    }
-    .footer {
-      display: flex;
-      align-items: center;
-      padding: 12px;
-      background-color: #333;
-      gap: 10px;
-      border-top: 2px solid #555;
-    }
-    .footer input[type="text"] {
-      flex: 1;
-      padding: 10px 15px;
-      border-radius: 20px;
-      border: none;
-      background-color: #555;
-      color: white;
-      font-size: 14px;
-    }
-    .footer button {
-      padding: 10px 15px;
-      background: #28a745;
-      border: none;
-      color: white;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .footer label {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      background-color: #007bff;
-      border-radius: 50%;
-      cursor: pointer;
-    }
-    .footer input[type="file"] { display: none; }
-    #modal {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.8);
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
-    #modalContent {
-      background: #333;
-      padding: 20px;
-      border-radius: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      min-width: 280px;
-    }
-    #modalContent input {
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-      background: #444;
-      color: white;
-    }
-    #modalContent button {
-      padding: 10px;
-      border: none;
-      background: #28a745;
-      color: white;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+    /* Reset */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #000; color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-    /* Tela de Boas-vindas */
-    #welcome-screen {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #222;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      text-align: center;
-      font-size: 18px;
-      z-index: 9999;
-      opacity: 1;
-      animation: fadeIn 1s ease-out;
-    }
+    /* Header estilo Instagram DM */
+    .dm-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #111; border-bottom: 1px solid #222; }
+    .dm-header h1 { font-size: 1.2rem; font-weight: 600; }
+    .dm-header .icons { display: flex; gap: 16px; }
+    .icon-button { background: none; border: none; cursor: pointer; padding: 8px; display: flex; align-items: center; justify-content: center; }
+    .icon-button svg { fill: #fff; width: 24px; height: 24px; }
 
-    #welcome-screen h1 {
-      font-size: 36px;
-      margin-bottom: 20px;
-    }
+    /* Main container and tabs */
+    #chat-app { flex: 1; position: relative; }
+    #chat-tab, #search-tab, #rooms-tab { position: absolute; top: 52px; left: 0; right: 0; bottom: 60px; overflow-y: auto; padding: 0 16px; display: none; }
+    /* show chat-tab by default */
+    #chat-tab { display: block; }
 
-    #welcome-screen p {
-      font-size: 20px;
-      margin-bottom: 30px;
-    }
+    /* Search & Rooms content */
+    #search-tab h2, #rooms-tab h2 { margin: 16px 0; color: #fff; }
+    #search-tab input, #rooms-tab input, #rooms-tab button { width: 100%; margin-top: 8px; padding: 10px; border-radius: 8px; border: none; background: #222; color: #fff; font-size: 14px; }
 
-    #welcome-screen button {
-      background-color: #28a745;
-      border: none;
-      color: white;
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+    /* Sidebar hidden since mobile-first */
+    .dm-container { display: flex; flex-direction: column; height: 100%; }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+    /* Chat area */
+    .dm-chat { flex: 1; display: flex; flex-direction: column; }
+    .chat-messages { flex: 1; padding: 16px 0; display: flex; flex-direction: column; gap: 12px; }
+    .bubble { max-width: 70%; padding: 10px 14px; border-radius: 18px; word-break: break-word; font-size: 14px; }
+    .bubble.me { align-self: flex-end; background: #1e90ff; }
+    .bubble.them { align-self: flex-start; background: #2a2a2a; }
+    .bubble time { display: block; font-size: 10px; color: #aaa; margin-top: 4px; text-align: right; }
+
+    /* Chat footer */
+    .chat-footer { position: absolute; bottom: 0; left: 0; right: 0; background: #111; display: flex; align-items: center; padding: 12px 16px; border-top: 1px solid #222; gap: 12px; }
+    .chat-footer input[type="text"] { flex: 1; padding: 10px 14px; border-radius: 20px; border: none; background: #222; color: #fff; font-size: 14px; }
+    .chat-footer .icon-button { padding: 8px; }
+
+    /* Bottom navigation */
+    #bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; height: 60px; background: #111; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #333; }
+    #bottom-nav button { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
   </style>
 </head>
 <body>
-  <div id="welcome-screen">
-    <h1>Bem-vindo ao Chat Seguro</h1>
-    <p>O chat mais seguro para conversas do mundo inteiro. Mensagens criptografadas, impossíveis de serem hackeadas ou grampeadas por qualquer pessoa, até mesmo autoridades. Sua privacidade é nossa prioridade!</p>
-    <button onclick="showLoginModal()">OK</button>
-  </div>
+  <header class="dm-header">
+    <h1>Direct</h1>
+    <div class="icons">
+      <button class="icon-button" onclick="showTab('chat')" title="Mensagens">
+        <svg viewBox="0 0 24 24"><path d="M2 3h20v14H6l-4 4V3z"/></svg>
+      </button>
+      <button class="icon-button" title="Chamada de vídeo">
+        <svg viewBox="0 0 24 24"><path d="M17 10.5V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-4.5l4 4v-11l-4 4z"/></svg>
+      </button>
+      <button class="icon-button" onclick="showTab('search')" title="Pesquisar">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 14C7.02 14 5 11.98 5 9.5S7.02 5 9.5 5 14 7.02 14 9.5 11.98 14 9.5 14z"/></svg>
+      </button>
+      <button class="icon-button" onclick="showTab('rooms')" title="Salas">
+        <svg viewBox="0 0 24 24"><path d="M10 3H4c-1.1 0-2 .9-2 2v6h2V5h6V3zm10 0h-6v2h6v6h2V5c0-1.1-.9-2-2-2zM4 15v6c0 1.1.9 2 2 2h6v-2H6v-6H4zm18 0h-2v6h-6v2h6c1.1 0 2-.9 2-2v-6z"/></svg>
+      </button>
+    </div>
+  </header>
 
-  <div class="header">
-    <div>Chat Seguro</div>
-    <div class="header-right">
-      <span id="user-status">Online</span>
-      <div id="status-indicator"></div>
+  <div id="chat-app">
+    <!-- Chat Tab -->
+    <div id="chat-tab">
+      <div class="dm-container">
+        <div class="dm-chat">
+          <div class="chat-messages" id="messages"></div>
+          <div class="chat-footer">
+            <button class="icon-button" title="Enviar Foto">
+              <svg viewBox="0 0 24 24"><path d="M21 19V5a2 2 0 0 0-2-2H5c-1.105 0-2 .895-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+            </button>
+            <input type="text" id="msgInput" placeholder="Mensagem...">
+            <button class="icon-button" id="micButton" title="Gravar Áudio">
+              <svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0h-2zM12 19v4m-4-2h8"/></svg>
+            </button>
+            <button class="icon-button" title="Enviar" onclick="sendText()">
+              <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Tab -->
+    <div id="search-tab">
+      <h2>🔍 Pesquisa</h2>
+      <input type="text" placeholder="Pesquisar...">
+    </div>
+
+    <!-- Rooms Tab -->
+    <div id="rooms-tab">
+      <h2>🏠 Salas</h2>
+      <button onclick="initChat()">Criar nova sala</button>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div id="bottom-nav">
+      <button onclick="showTab('chat')">💬</button>
+      <button onclick="showTab('search')">🔍</button>
+      <button onclick="showTab('rooms')">🏠</button>
     </div>
   </div>
-  <div id="chat"></div>
-  <div class="footer">
-    <input id="messageInput" type="text" placeholder="Digite sua mensagem...">
-    <button onclick="sendMessage()">Enviar</button>
-    <label for="imageUpload">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fff" viewBox="0 0 24 24">
-        <path d="M21 19V5a2 2 0 0 0-2-2H5c-1.105 0-2 .895-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-      </svg>
-    </label>
-    <input type="file" id="imageUpload" accept="image/*" onchange="handleImageUpload(event)">
-    <button id="recordBtn" style="background:#ff4081;">🎤</button>
-    <button onclick="showModal()" style="background:#ffb74d;">+</button>
-  </div>
-  <div id="modal">
-    <div id="modalContent">
-      <p><strong><p style="text-align: center;"><strong>Insira seu nome e o número da sala</strong></p></strong></p>
-      <p style="text-align: center;">Após inserir as informações, você será redirecionado para a sala privada e anônima.</p>
-      <input id="username" placeholder="Seu nome">
-      <input id="room" placeholder="Nome da sala">
-      <button onclick="joinRoom()">Entrar</button>
-    </div>
-  </div>
+<!-- Bottom Navigation -->
+<div id="bottom-nav">
+  <!-- Mensagens (ícone envelope, estilo Instagram) -->
+  <button onclick="showTab('chat')" title="Mensagens">
+    <svg viewBox="0 0 24 24" width="28" height="28" fill="#fff">
+      <path d="M2 3h20v14H6l-4 4V3z"/>
+    </svg>
+  </button>
+
+  <!-- Pesquisa -->
+  <button onclick="showTab('search')" title="Pesquisar">
+    <svg viewBox="0 0 24 24" width="28" height="28" fill="#fff">
+      <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5
+               6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57
+               l.27.28v.79l5 4.99L20.49 19l-4.99-5zM9.5 14
+               C7.02 14 5 11.98 5 9.5S7.02 5 9.5 5
+               14 7.02 14 9.5 11.98 14 9.5 14z"/>
+    </svg>
+  </button>
+
+  <!-- Salas (mantido o ícone atual) -->
+  <button onclick="showTab('rooms')" title="Salas">
+    <svg viewBox="0 0 24 24" width="28" height="28" fill="#fff">
+      <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+    </svg>
+  </button>
+</div>
+
+<style>
+  #bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: #111;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid #222;
+    z-index: 1000;
+  }
+  #bottom-nav button {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+  }
+  #bottom-nav svg {
+    fill: #fff;
+    width: 28px;
+    height: 28px;
+  }
+</style>
+
+<script>
+  function showTab(tab) {
+    document.getElementById('chat-tab').style.display   = tab === 'chat'   ? 'block' : 'none';
+    document.getElementById('search-tab').style.display = tab === 'search' ? 'block' : 'none';
+    document.getElementById('rooms-tab').style.display  = tab === 'rooms'  ? 'block' : 'none';
+  }
+</script>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <script>
     const socket = io();
-    let username = "", room = "", secretKey;
+    let username = '', room = '', secretKey = '';
+    const messagesEl = document.getElementById('messages');
 
-    function setUserStatus(status) {
-      const s = document.getElementById('user-status');
-      const ind = document.getElementById('status-indicator');
-      s.textContent = status === 'online' ? 'Online' : 'Offline';
-      ind.style.background = status === 'online' ? 'green' : 'gray';
+    socket.on('key', k => secretKey = k);
+
+    function initChat() {
+      username = prompt('Digite seu nome de usuário:');
+      room = prompt('Digite o nome da sala:');
+      if (!username || !room) return initChat();
+      socket.emit('join_room', room, username);
+      showTab('chat');
     }
 
-    setUserStatus('online');
-    
-    // Função para esconder a tela de boas-vindas e mostrar o modal de login
-    function showLoginModal() {
-      document.getElementById('welcome-screen').style.display = 'none';
-      document.getElementById('modal').style.display = 'flex';
-    }
-
-    function showModal() { document.getElementById('modal').style.display = 'flex'; }
-    socket.on('key', key => secretKey = key);
-
-    function joinRoom() {
-      username = document.getElementById('username').value;
-      room = document.getElementById('room').value;
-      if (!username || !room) return;
-      socket.emit('join_room', room);
-      document.getElementById('modal').style.display = 'none';
-      loadMessages();
-    }
-
-    function encryptMessage(text, keyHex) {
-      const key = CryptoJS.enc.Hex.parse(keyHex);
-      const iv = CryptoJS.lib.WordArray.random(16);
+    function encrypt(text) {
+      const key = CryptoJS.enc.Hex.parse(secretKey);
+      const iv  = CryptoJS.lib.WordArray.random(16);
       const enc = CryptoJS.AES.encrypt(text, key, { iv, mode: CryptoJS.mode.CBC });
       return iv.toString() + enc.ciphertext.toString();
     }
 
-    function decryptMessage(dataHex, keyHex) {
-      const key = CryptoJS.enc.Hex.parse(keyHex);
-      const iv = CryptoJS.enc.Hex.parse(dataHex.slice(0, 32));
-      const ct = CryptoJS.enc.Hex.parse(dataHex.slice(32));
-      return CryptoJS.AES.decrypt({ ciphertext: ct }, key, { iv, mode: CryptoJS.mode.CBC }).toString(CryptoJS.enc.Utf8);
+    function decrypt(data) {
+      const key = CryptoJS.enc.Hex.parse(secretKey);
+      const iv  = CryptoJS.enc.Hex.parse(data.substr(0, 32));
+      const ct  = CryptoJS.enc.Hex.parse(data.substr(32));
+      const dec = CryptoJS.AES.decrypt({ ciphertext: ct }, key, { iv, mode: CryptoJS.mode.CBC });
+      return dec.toString(CryptoJS.enc.Utf8);
     }
 
-    socket.on('receive_message', encrypted => {
-      const dec = decryptMessage(encrypted, secretKey);
-      const mine = dec.startsWith('[' + username + ']:' );
-      const txt = dec.split(']: ')[1];
-      const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-      const id = Date.now() + Math.random();
-      addMessage(txt, mine ? 'you' : 'other', time, id);
-    });
-
-    socket.on('receive_audio', ({ audioBase64, username }) => {
-      const audioTag = `<audio controls src="data:audio/webm;base64,${audioBase64}" style="max-width: 200px;"></audio>`;
-      const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-      const id = Date.now() + Math.random();
-      addMessage(audioTag, 'other', time, id);
-    });
-
-    socket.on('update_seen', ({ id }) => {
-      const status = document.querySelector(`[data-id='${id}'] .message-status`);
-      if (status) status.textContent = '✓✓';
-    });
-
-    function sendMessage() {
-      const msg = document.getElementById('messageInput').value;
-      if (!msg || !room || !username) return;
-      const full = `[${username}]: ${msg}`;
-      const enc = encryptMessage(full, secretKey);
-      const id = Date.now() + Math.random();
-      socket.emit('send_message', { room, message: enc, id });
-      const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-      addMessage(msg, 'you', time, id);
-      document.getElementById('messageInput').value = '';
-
-      const audio = new Audio('https://upload.wikimedia.org/wikipedia/commons/f/f9/Beep_example.ogg');
-audio.play();
-
-    }
-
-    function addMessage(text, type, time, id) {
+    function addBubble(txt, isMe) {
       const div = document.createElement('div');
-      div.classList.add('message', type);
-      div.dataset.id = id;
-      div.innerHTML = `
-        <span class="message-text">${text}</span>
-        <span class="message-time">${time}</span>
-        <span class="message-status">...</span>
-      `;
-      document.getElementById('chat').appendChild(div);
-      setTimeout(() => {
-        document.querySelector(`[data-id='${id}'] .message-status`).textContent = '✓';
-      }, 1000);
+      div.className = 'bubble ' + (isMe ? 'me' : 'them');
+      div.innerHTML = txt + `<time>${new Date().toLocaleTimeString()}</time>`;
+      messagesEl.appendChild(div);
+      div.scrollIntoView();
     }
 
-    function loadMessages() {
-      socket.emit('load_messages', room);
+    function sendText() {
+      const inp = document.getElementById('msgInput');
+      if (!inp.value) return;
+      const full = `[${username}]: ` + inp.value;
+      const enc = encrypt(full);
+      socket.emit('send_message', { room, message: enc });
+      addBubble(inp.value, true);
+      inp.value = '';
     }
+
+    document.getElementById('micButton').onclick = async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      const chunks = [];
+      recorder.ondataavailable = e => chunks.push(e.data);
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'audio/webm' });
+        const reader = new FileReader();
+        reader.onload = () => {
+          const b64 = reader.result.split(',')[1];
+          const payload = `[${username}]:[AUDIO]${b64}`;
+          const enc     = encrypt(payload);
+          socket.emit('send_message', { room, message: enc });
+          addBubble('📢 Áudio', true);
+        };
+        reader.readAsDataURL(blob);
+      };
+      recorder.start();
+      setTimeout(() => recorder.stop(), 5000);
+    };
+
+    socket.on('receive_message', data => {
+      const encrypted = data.message || data;
+      const txt = decrypt(encrypted);
+      if (txt.includes('[AUDIO]')) {
+        const [head, b64] = txt.split('[AUDIO]');
+        const audioHTML = `<audio controls src="data:audio/webm;base64,${b64}"></audio>`;
+        addBubble(head + audioHTML, false);
+      } else {
+        const content = txt.split(']: ')[1];
+        addBubble(content, false);
+      }
+    });
+
+    function showTab(tab) {
+      document.getElementById('chat-tab').style.display   = tab === 'chat' ? 'block' : 'none';
+      document.getElementById('search-tab').style.display = tab === 'search' ? 'block' : 'none';
+      document.getElementById('rooms-tab').style.display  = tab === 'rooms' ? 'block' : 'none';
+    }
+
+    // Initialize app
+    initChat();
   </script>
 </body>
 </html>
