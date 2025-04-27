@@ -219,7 +219,7 @@
       inp.value = '';
     }
 
-  // → Novo bloco para gravação com contador e notificações
+   // → Novo bloco para gravação com contador e notificações
 let mediaRecorder, audioChunks = [], recInterval;
 const recIndicator = document.getElementById('recIndicator');
 const startSound = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
@@ -260,8 +260,6 @@ document.getElementById('micButton').addEventListener('click', async (event) => 
       clearInterval(recInterval);
       recIndicator.textContent = '';
       const blob = new Blob(audioChunks, { type: 'audio/webm' });
-
-      // Tenta converter para formato 'audio/ogg' se não for compatível
       const reader = new FileReader();
       reader.onload = () => {
         const b64 = reader.result.split(',')[1];
@@ -275,8 +273,6 @@ document.getElementById('micButton').addEventListener('click', async (event) => 
         const audioHTML = `<audio controls src="data:audio/webm;base64,${b64}"></audio>`;
         addBubble(audioHTML, true); // Adiciona o áudio enviado na sua tela
       };
-
-      // Tenta salvar em 'audio/ogg' para maior compatibilidade
       reader.readAsDataURL(blob);
     };
   }
@@ -306,7 +302,6 @@ document.querySelectorAll('.bottom-button').forEach(button => {
     // Aqui você pode adicionar o código para os outros botões (como pesquisa, entrar na sala, enviar mensagens)
   });
 });
-
 
     function showTab(tab) {
       document.getElementById('chat-tab').style.display   = tab === 'chat' ? 'block' : 'none';
