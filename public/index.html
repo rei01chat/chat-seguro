@@ -219,7 +219,8 @@
       inp.value = '';
     }
 
- let mediaRecorder, audioChunks = [], recInterval;
+  // → Novo bloco para gravação com contador e notificações
+let mediaRecorder, audioChunks = [], recInterval;
 const recIndicator = document.getElementById('recIndicator');
 const startSound = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
 const sendSound  = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
@@ -239,7 +240,7 @@ document.getElementById('micButton').addEventListener('click', async (event) => 
     // começar
     startSound.play();
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' }); // Especificando o formato 'audio/webm'
+    mediaRecorder = new MediaRecorder(stream);
     audioChunks = [];
     mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
     mediaRecorder.start();
@@ -258,8 +259,9 @@ document.getElementById('micButton').addEventListener('click', async (event) => 
     mediaRecorder.onstop = () => {
       clearInterval(recInterval);
       recIndicator.textContent = '';
-      const blob = new Blob(audioChunks, { type: 'audio/webm' }); // Garantindo que o áudio será 'webm'
+      const blob = new Blob(audioChunks, { type: 'audio/webm' });
 
+      // Tenta converter para formato 'audio/ogg' se não for compatível
       const reader = new FileReader();
       reader.onload = () => {
         const b64 = reader.result.split(',')[1];
@@ -274,6 +276,7 @@ document.getElementById('micButton').addEventListener('click', async (event) => 
         addBubble(audioHTML, true); // Adiciona o áudio enviado na sua tela
       };
 
+      // Tenta salvar em 'audio/ogg' para maior compatibilidade
       reader.readAsDataURL(blob);
     };
   }
@@ -286,7 +289,7 @@ socket.on('receive_message', (data) => {
 
   if (txt.includes('[AUDIO]')) {
     const [head, b64] = txt.split('[AUDIO]');
-    const audioHTML = `<audio controls src="data:audio/webm;base64,${b64}"></audio>`; // Usando 'webm' aqui também
+    const audioHTML = `<audio controls src="data:audio/webm;base64,${b64}"></audio>`;
 
     // Exibe o áudio recebido tanto para você quanto para o outro usuário
     addBubble(audioHTML, false); // Exibe o áudio na tela do outro usuário
@@ -303,6 +306,7 @@ document.querySelectorAll('.bottom-button').forEach(button => {
     // Aqui você pode adicionar o código para os outros botões (como pesquisa, entrar na sala, enviar mensagens)
   });
 });
+
 
     function showTab(tab) {
       document.getElementById('chat-tab').style.display   = tab === 'chat' ? 'block' : 'none';
